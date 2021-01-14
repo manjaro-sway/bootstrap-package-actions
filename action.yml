@@ -1,0 +1,16 @@
+name: 'Bootstrap Package Actions'
+description: 'Bootstraps Actions to Build and Update an Action'
+inputs:
+  upstream:
+    description: 'Upstream package Repository (sth. like https://aur.archlinux.org/autotiling.git)'
+    required: true
+runs:
+  using: "composite"
+  steps:
+    - 
+      name: prepare
+      shell: bash
+      run: |
+        git config user.name bootstrap-package-actions
+        git config user.email info@manjaro-sway.download
+        echo ${{ inputs.upstream }}
