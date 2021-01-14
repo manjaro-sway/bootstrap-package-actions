@@ -13,4 +13,18 @@ runs:
       run: |
         git config user.name bootstrap-package-actions
         git config user.email info@manjaro-sway.download
-        echo ${{ inputs.upstream }}
+    -
+      name: bootstrap
+      shell: bash
+      run: |
+        cp ${{ github.action_path }}/actions/* .github/workflows/
+        [ -f .github/dependabot.yml ] || cp ${{ github.action_path }}/dependabot.yml .github/
+        
+        sed -i 's|__UPSTREAM__|"${{ inputs.upstream }}"|g' .github/workflows/*.yml
+    -
+      name: commit
+      shell: bash
+      run: |
+        git add .github/workflows/*.yml
+        git commit -m "chore: bootstrap-actions"
+        git push
