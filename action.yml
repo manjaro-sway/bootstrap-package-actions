@@ -30,5 +30,6 @@ runs:
       shell: bash
       run: |
         git add .github/workflows/*.yml
+        git add .github/*
         git commit -m "chore(actions-bootstrap): update default actions"
         git push
