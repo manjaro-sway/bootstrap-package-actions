@@ -6,7 +6,7 @@ on:
     - cron:  '*/30 * * * *'
   
 env:
-  UPSTREAM_GIT_HTTPS: __UPSTREAM__
+  UPSTREAM_GIT: __UPSTREAM__
 
 jobs:
   rebase:
@@ -18,9 +18,13 @@ jobs:
       with:
         token: ${{ secrets.PUSH_AND_TRIGGER }}
     - 
+      name: add ssh pk
+      if: ${{ contains(env.UPSTREAM_GIT, 'ssh') }}
+      run: mkdir -p ~/.ssh/id_rsa && echo "${{ secrets.SSH_BASE64 }}" | base64 -d >~/.ssh/id_rsa
+    - 
       name: check if behind upstream
       run: |
-        git remote add upstream ${UPSTREAM_GIT_HTTPS}
+        git remote add upstream ${UPSTREAM_GIT}
         git fetch upstream
         git merge-base --is-ancestor $(git branch --show-current) upstream/$(git branch --show-current) && exit 1 || exit 0
     - 
