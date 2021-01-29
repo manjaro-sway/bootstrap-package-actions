@@ -16,18 +16,19 @@ runs:
     -
       name: bootstrap
       shell: bash
+      env:
+        UPSTREAM: ${{ inputs.upstream }}
       run: |
-        if [[ -n "${{ inputs.upstream }}" ]]; then
-          cp ${{ github.action_path }}/actions/upstream/* .github/workflows/
-        fi
         cp ${{ github.action_path }}/actions/common/* .github/workflows/
-        sed -i 's|__UPSTREAM__|"${{ inputs.upstream }}"|g' .github/workflows/*.yml
+        cp ${{ github.action_path }}/settings.yml .github/
+        sed -i 's|__UPSTREAM__|"${UPSTREAM}"|g' .github/settings.yml
+
+        if [[ -n "${UPSTREAM}" ]]; then
+          cp ${{ github.action_path }}/actions/upstream/* .github/workflows/
+          sed -i 's|__UPSTREAM__|"${UPSTREAM}"|g' .github/workflows/*.yml
+        fi
 
         [ -f .github/dependabot.yml ] || cp ${{ github.action_path }}/dependabot.yml .github/
-
-        [ -f .github/settings.yml ] || cp ${{ github.action_path }}/settings.yml .github/
-        sed -i 's|__UPSTREAM__|"${{ inputs.upstream }}"|g' .github/settings.yml
-        
     -
       name: commit
       shell: bash
