@@ -21,11 +21,11 @@ runs:
       run: |
         cp ${{ github.action_path }}/actions/common/* .github/workflows/
         cp ${{ github.action_path }}/settings.yml .github/
-        sed -i 's|__UPSTREAM__|"${UPSTREAM}"|g' .github/settings.yml
+        sed -i "s|__UPSTREAM__|"${UPSTREAM}"|g" .github/settings.yml
 
         if [[ -n "${UPSTREAM}" ]]; then
           cp ${{ github.action_path }}/actions/upstream/* .github/workflows/
-          sed -i 's|__UPSTREAM__|"${UPSTREAM}"|g' .github/workflows/*.yml
+          sed -i "s|__UPSTREAM__|"${UPSTREAM}"|g" .github/workflows/*.yml
         fi
 
         [ -f .github/dependabot.yml ] || cp ${{ github.action_path }}/dependabot.yml .github/
