@@ -35,5 +35,8 @@ runs:
       run: |
         git add .github/workflows/*.yml
         git add .github/*
-        git commit -m "chore(actions-bootstrap): update default actions"
-        git push
+        if [ -n "$(git status --porcelain)" ]; then
+          git commit -m "chore(actions-bootstrap): update default actions"
+          git push
+        fi
+        
