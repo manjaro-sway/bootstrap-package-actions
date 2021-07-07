@@ -23,22 +23,10 @@ jobs:
           git rev-list "${VERSION}" >/dev/null && \
             echo "::set-output name=updatable::false" || \
             echo "::set-output name=updatable::true"
-      - name: create_release
-        id: release
-        uses: actions/create-release@v1.1.4
-        if: ${{ steps.check.outputs.updatable == 'true' }}
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          tag_name: ${{ env.VERSION }}
-          release_name: ${{ env.VERSION }}
-          draft: false
-          prerelease: false
     outputs:
       updatable: ${{ steps.check.outputs.updatable }}
       architectures: ${{ env.ARCHITECTURES }}
       version: ${{ env.VERSION }}
-      upload_url: ${{ steps.release.outputs.upload_url }}
   pkgbuild:
     runs-on: ubuntu-20.04
     name: ${{ matrix.distro }} ${{ matrix.arch }}
@@ -83,26 +71,30 @@ jobs:
                 sudo -u builder gpg --recv-key $key
               done
             fi
+            pacman-key --keyserver pgp.mit.edu --recv-keys ${{ secrets.GPG_KEYID }}
             sed -i '/^\[core\]/i \[manjaro-sway\]\nSigLevel = Optional TrustAll\nServer = https://packages.manjaro-sway.download/$arch\n' /etc/pacman.conf
             pacman-mirrors --geoip
             pacman -Syy
           run: |
             chown builder $PWD
             sudo -u builder makepkg -fsAc --noconfirm --noprogressbar
-            cp *.pkg.tar.zst /artifacts/
+            cp *.pkg.tar.zst* /artifacts/
       - name: determine-filename
         if: ${{ env.BUILD == 'true' }}
         run: echo "FILE_NAME=$(basename $(find ./artifacts/ -type f  \( -name "*.pkg.tar.zst" \)))" >> $GITHUB_ENV
+      - name: sign
+        if: ${{ env.BUILD == 'true' }}
+        run: |
+          # import signing key (no passphrase)
+          cat <(echo -e "${{ secrets.GPG_SECRET_KEY_BASE64 }}" | base64 --decode) | gpg --batch --import
+          gpg --pinentry-mode loopback --detach-sign ./artifacts/${{ env.FILE_NAME }}
       - name: release
         if: ${{ env.BUILD == 'true' }}
-        uses: actions/upload-release-asset@v1.0.2
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          upload_url:  ${{ needs.prepare.outputs.upload_url }}
-          asset_path: "./artifacts/${{ env.FILE_NAME }}"
-          asset_name: ${{ env.FILE_NAME }}
-          asset_content_type: application/zstd
+        run: |
+          echo ${{ github.token }} | gh auth login --with-token
+          gh release create ${{ needs.prepare.outputs.version }} --repo ${{ github.repository }} --notes "automated release" || echo "release already exists"
+          gh release upload ${{ needs.prepare.outputs.version }} --repo ${{ github.repository }} --clobber \
+            ./artifacts/${{ env.FILE_NAME }} ./artifacts/${{ env.FILE_NAME }}.sig
       - name: dispatch
         if: ${{ env.BUILD == 'true' }}
         uses: peter-evans/repository-dispatch@v1
