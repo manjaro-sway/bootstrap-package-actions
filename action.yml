@@ -7,14 +7,12 @@ inputs:
 runs:
   using: "composite"
   steps:
-    - 
-      name: prepare
+    - name: prepare
       shell: bash
       run: |
         git config user.name bootstrap-package-actions
         git config user.email info@manjaro-sway.download
-    -
-      name: bootstrap
+    - name: bootstrap
       shell: bash
       env:
         UPSTREAM: ${{ inputs.upstream }}
@@ -29,12 +27,12 @@ runs:
         fi
 
         [ -f .github/dependabot.yml ] || cp ${{ github.action_path }}/dependabot.yml .github/
-    -
-      name: commit
+    - name: commit
       shell: bash
       run: |
         git add .github/workflows/*.yml
         git add .github/*
+
         if [ -n "$(git status --porcelain)" ]; then
           git commit -m "chore(actions-bootstrap): update default actions"
           git push
