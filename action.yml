@@ -27,8 +27,7 @@ runs:
     - name: commit
       shell: bash
       run: |
-        git add .github/workflows/*.yml
-        git add .github/*
+        git add .
 
         if [ -n "$(git status --porcelain)" ]; then
           git commit -m "chore(actions-bootstrap): update default actions"
