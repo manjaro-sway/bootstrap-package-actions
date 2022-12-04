@@ -23,7 +23,7 @@ runs:
         sed -i "s|__UPSTREAM__|"${UPSTREAM}"|g" .github/settings.yml
         sed -i "s|__UPSTREAM__|"${UPSTREAM}"|g" .github/workflows/*.yml
 
-        cp -f renovate.json ${{ github.action_path }}/
+        cp -f ${{ github.action_path }}/renovate.json .
     - name: commit
       shell: bash
       run: |
