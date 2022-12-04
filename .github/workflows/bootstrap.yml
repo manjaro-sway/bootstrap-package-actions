@@ -5,7 +5,7 @@ on:
     - cron:  '0 1-23/2 * * *'
 
 jobs:
-  botstrap_actions:
+  bootstrap_actions:
     runs-on: ubuntu-latest
     steps:
       - 
@@ -17,4 +17,4 @@ jobs:
         id: bootstrap
         uses: Manjaro-Sway/bootstrap-package-actions@master
         with:
-          upstream: __UPSTREAM__
+          upstream: https://aur.archlinux.org/oh-my-zsh-git.git
