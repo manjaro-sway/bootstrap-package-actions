@@ -23,6 +23,9 @@ runs:
 
         sed -i "s|__UPSTREAM__|"${UPSTREAM}"|g" .github/settings.yml
         sed -i "s|__UPSTREAM__|"${UPSTREAM}"|g" .github/workflows/*.yml
+
+        # remove the outdated set-version workflow
+        rm -f .github/workflows/set-version.yml
     - name: commit
       shell: bash
       run: |
