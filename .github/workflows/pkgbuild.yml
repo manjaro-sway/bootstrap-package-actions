@@ -24,7 +24,7 @@ jobs:
       - id: version
         uses: manjaro-contrib/action-pkgbuild-info@main
         with:
-          arm-runs-on: ${{ vars.arm-runner }}
+          arm-runs-on: ${{ vars.arm_runner }}
     outputs:
       runs-on: ${{ steps.version.outputs.runs-on }}
       version: ${{ steps.version.outputs.version }}
