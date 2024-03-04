@@ -22,6 +22,7 @@ runs:
         cp -r ${{ github.action_path }}/.github/workflows/* .github/workflows/
         if [ ! -f .github/settings.yml ]; then
           cp -r ${{ github.action_path }}/.github/settings.yml .github/
+        fi
 
         sed -i "s|__UPSTREAM__|"${UPSTREAM}"|g" .github/settings.yml
         sed -i "s|__UPSTREAM__|"${UPSTREAM}"|g" .github/workflows/*.yml
