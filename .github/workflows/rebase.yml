@@ -34,7 +34,7 @@ jobs:
         with:
           cmd: yq '.repository.topics += ", any"' -i .github/settings.yml
       - if: steps.version.outputs.python == 'true'
-        uses: mikefarah/yq@f15500b20a1c991c8729870ba60a4dc3524b6a94 # v4.44.2
+        uses: mikefarah/yq@65cb4726048d891459f8d0a6147c66eed1d401e1 # 3.4.0
         with:
           cmd: yq '.repository.topics += ", python"' -i .github/settings.yml
       - name: commit
